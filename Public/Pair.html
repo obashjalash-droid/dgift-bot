@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>dgift Bot Pair</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { 
+      font-family: Arial, sans-serif; 
+      background: #111; 
+      color: #fff; 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      justify-content: center; 
+      height: 100vh; 
+      margin: 0;
+    }
+    input, button { 
+      padding: 12px; 
+      margin: 8px; 
+      border-radius: 8px; 
+      border: none; 
+      font-size: 16px;
+    }
+    input { width: 250px; }
+    button { 
+      background: #25D366; 
+      color: white; 
+      cursor: pointer; 
+      font-weight: bold;
+    }
+    #qr, #code { 
+      margin-top: 20px; 
+      font-size: 24px; 
+      text-align: center;
+    }
+    img { 
+      background: white; 
+      padding: 10px; 
+      border-radius: 12px;
+    }
+  </style>
+</head>
+<body>
+  <h2>🔗 Connect dgift Bot</h2>
+  <input id="number" placeholder="254748548334" type="tel">
+  <button onclick="pair()">Get Pair Code</button>
+  <div id="qr"></div>
+  <div id="code"></div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    function pair() {
+      const num = document.getElementById('number').value;
+      socket.emit('pair', num);
+      document.getElementById('qr').innerHTML = 'Generating...';
+    }
+    socket.on('qr', qr => {
+      document.getElementById('qr').innerHTML = `<img src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(qr)}">`;
+    });
+    socket.on('pair-code', code => {
+      document.getElementById('code').innerHTML = `<b>Pair Code:</b> ${code}<br><small>Open WhatsApp > Linked Devices > Link with phone number</small>`;
+    });
+    socket.on('connected', () => {
+      document.body.innerHTML = '<h2>✅ Connected Successfully!</h2><p>You can close this page now.</p>';
+    });
+  </script>
+</body>
+    </html>
